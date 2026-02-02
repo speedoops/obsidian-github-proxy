@@ -1,9 +1,9 @@
 {
-  "id": "obsidian-github-proxy",
+  "id": "github-proxy",
   "name": "Github Proxy",
   "version": "1.0.3",
   "minAppVersion": "1.6.5",
-  "description": "Accelerate GitHub access for plugin or theme downloads in regions with network restrictions (e.g. China Mainland). Configurable proxy servers, cross-platform support, and smart URL routing for reliable Obsidian marketplace access.",
+  "description": "Accelerate GitHub access for plugin or theme downloads in regions with network restrictions (e.g. China Mainland). Configurable proxy servers, cross-platform support, and smart URL routing for reliable marketplace access.",
   "author": "speedoops",
   "authorUrl": "https://github.com/speedoops",
   "isDesktopOnly": false
