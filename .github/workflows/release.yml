@@ -1,3 +1,4 @@
+# adapt from https://github.com/ericmwalk/obsidian-bunny-publisher/blob/main/.github/workflows/release.yml
 name: Release Obsidian plugin
 
 on:
@@ -10,16 +11,36 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: write
-    steps:
-      - uses: actions/checkout@v3
 
-      - name: Create release
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Update manifest.json version from tag
+        run: |
+          tag="${GITHUB_REF#refs/tags/}"
+          version="${tag#v}"
+          echo "Setting manifest.json version to $version"
+          jq --arg ver "$version" '.version=$ver' manifest.json > tmp.$$.json && mv tmp.$$.json manifest.json
+
+      - name: Commit version updates
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add manifest.json
+          if ! git diff --cached --quiet; then
+            git commit -m "Bump version to $version"
+            git pull --rebase origin main || echo "No rebase needed"
+            git push origin HEAD:main
+          fi
+
+      - name: Zip plugin
+        run: zip -r obsidian-github-proxy.zip main.js manifest.json
+
+      - name: Create GitHub release
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           tag="${GITHUB_REF#refs/tags/}"
-
-          gh release create "$tag" \
-            --title="$tag" \
-            --draft \
-            main.js manifest.json 
+          gh release create "$tag" --title="$tag" --latest main.js manifest.json obsidian-github-proxy.zip
